@@ -351,6 +351,12 @@ public class AirBooking{
  	* */	
 	public static void BookFlight(AirBooking esql){//2
 		//Book Flight for an existing customer
+		try{
+			
+		}
+		catch(Exception e){
+			System.err.println (e.getMessage());		
+		}
 	}
 	
 	/*This function will allow you, as a travel agent to note down the reviews of
@@ -359,8 +365,25 @@ public class AirBooking{
  	* performing the insert. 
  	*/
 	public static void TakeCustomerReview(AirBooking esql){//3
-		//Insert customer review into the ratings table
-		String query = "INSERT INTO 
+		try{
+			//Insert customer review into the ratings table
+			String query = "INSERT INTO Ratings VALUES(\'";
+		
+			//Retrieve pId
+			System.out.print("Passenger ID: ");
+			String pId = in.readLine();
+			//Retrieve flightNum
+			System.out.print("Flight Number: ");
+			String flightNum = in.readLine();
+			//TODO: Check if passenger was actually on the flight
+			//TODO: Get Score
+			//TODO: Get comment
+			
+			//TODO: execute query
+		}
+		catch(Exception e){
+			System.err.println (e.getMessage());		
+		}
 	}
 	
 	public static void InsertOrUpdateRouteForAirline(AirBooking esql){//4
@@ -372,9 +395,14 @@ public class AirBooking{
  	* You should print flight number, origin, destination, plane, and duration of flight.
 	*/
 	public static void ListAvailableFlightsBetweenOriginAndDestination(AirBooking esql) throws Exception{//5
-		//List all flights between origin and distination (i.e. flightNum,origin,destination,plane,duration) 
+		//List all flights between origin and distination (i.e. flightNum,origin,destination,plane,duration)
+		try{
+			
+		}
+		catch(Exception e){
+			System.err.println (e.getMessage());		
+		}
 	}
-	
 	/*This function will return a list of the k-most popular destinations depending on the
  	* number of flights offered to that specific destination. You should print out the name of
  	* the destination city and the number of distinct flights offered to that destination. The user
@@ -382,6 +410,13 @@ public class AirBooking{
 	*/
 	public static void ListMostPopularDestinations(AirBooking esql){//6
 		//Print the k most popular destinations based on the number of flights offered to them (i.e. destination, choices)
+		try{
+			
+		}
+		catch(Exception e){
+			System.err.println (e.getMessage());		
+		}
+
 	}
 		
 	/*This function will return a list of the k-highest rated routes based on the user ratings.
@@ -390,6 +425,13 @@ public class AirBooking{
 	*/
 	public static void ListHighestRatedRoutes(AirBooking esql){//7
 		//List the k highest rated Routes (i.e. Airline Name, flightNum, Avg_Score)
+		try{
+			
+		}
+		catch(Exception e){
+			System.err.println (e.getMessage());		
+		}
+
 	}
 	
 	/*This function will return a list of a k flights for a given origin and destination in order
@@ -398,6 +440,13 @@ public class AirBooking{
  	*/
 	public static void ListFlightFromOriginToDestinationInOrderOfDuration(AirBooking esql){//8
 		//List flight to destination in order of duration (i.e. Airline name, flightNum, origin, destination, duration, plane)
+		try{
+			
+		}
+		catch(Exception e){
+			System.err.println (e.getMessage());		
+		}
+
 	}
 	
 	/*Find the number of empty seats for a given flight on a given date. You should print flight
@@ -406,7 +455,13 @@ public class AirBooking{
  	*/
 	public static void FindNumberOfAvailableSeatsForFlight(AirBooking esql){//9
 		//
-		
+		try{
+			
+		}
+		catch(Exception e){
+			System.err.println (e.getMessage());		
+		}
+
 	}
 	
 }
