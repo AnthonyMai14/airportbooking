@@ -296,6 +296,7 @@ public class AirBooking{
 		}while (true);
 		return input;
 	}//end readChoice
+	
 	/*Add a new passenger into the database. You should provide an interface that takes as
  	* input the information of a new passenger (i.e. passport number, full name, birth date e.t.c)
  	* and checks if the provided information are valid based on the constrains of the database schema.
@@ -321,7 +322,14 @@ public class AirBooking{
 			
 			//Get last pId in database
 			List<List<String>> queryResult = esql.executeQueryAndReturnResult("SELECT MAX(pID) FROM Passenger;");
-			String retrieve_pid_from_query = queryResult.get(0).get(0);
+			String retrieve_pid_from_query = "";
+
+			if (queryResult.size() == 0) {
+				retrieve_pid_from_query = "0";
+			}
+			else {
+				retrieve_pid_from_query = queryResult.get(0).get(0);
+			}
 			int num_pId = Integer.parseInt(retrieve_pid_from_query);
 			num_pId += 1;
 			String pId = Integer.toString(num_pId);
@@ -333,35 +341,68 @@ public class AirBooking{
 			System.err.println (e.getMessage());
 		}
 	}
-	
+
+	/*Book a flight for an existing passenger. This function will enable you to book a flight
+ 	* from a given origin to a given destination for an existing customer. You need to provide 
+ 	* pg. 3 an interface that accepts the necessary information for booking a flight and checks if all
+ 	* inputs given by the user are valid based on the defined schema and the information stored
+ 	* in the database
+ 	* */	
 	public static void BookFlight(AirBooking esql){//2
 		//Book Flight for an existing customer
 	}
 	
+	/*This function will allow you, as a travel agent to note down the reviews of
+ 	* passengers. You should provide an interface that allows you to insert a new record of a
+ 	* rating for a given flight. Make sure to check for all the necessary constraints before
+ 	* performing the insert. 
+ 	*/
 	public static void TakeCustomerReview(AirBooking esql){//3
 		//Insert customer review into the ratings table
+		String query = "INSERT INTO 
 	}
 	
 	public static void InsertOrUpdateRouteForAirline(AirBooking esql){//4
 		//Insert a new route for the airline
 	}
 	
+	/*This function will allow you to list all available flights between two cities. A booking
+ 	* agent uses this information to make an informed decision when booking a given flight.
+ 	* You should print flight number, origin, destination, plane, and duration of flight.
+	*/
 	public static void ListAvailableFlightsBetweenOriginAndDestination(AirBooking esql) throws Exception{//5
 		//List all flights between origin and distination (i.e. flightNum,origin,destination,plane,duration) 
 	}
 	
+	/*This function will return a list of the k-most popular destinations depending on the
+ 	* number of flights offered to that specific destination. You should print out the name of
+ 	* the destination city and the number of distinct flights offered to that destination. The user
+ 	* should provide the value of k during runtime
+	*/
 	public static void ListMostPopularDestinations(AirBooking esql){//6
 		//Print the k most popular destinations based on the number of flights offered to them (i.e. destination, choices)
 	}
-	
+		
+	/*This function will return a list of the k-highest rated routes based on the user ratings.
+ 	* You should print out the airline name, flight number, origin, destination, plane, and
+ 	* avg_score. The user should provide the value of k during runtime
+	*/
 	public static void ListHighestRatedRoutes(AirBooking esql){//7
 		//List the k highest rated Routes (i.e. Airline Name, flightNum, Avg_Score)
 	}
 	
+	/*This function will return a list of a k flights for a given origin and destination in order
+ 	* of duration. You should print the airline, flight number, origin, destination, plane, and
+ 	* duration. The user should give the value of k during runtime.
+ 	*/
 	public static void ListFlightFromOriginToDestinationInOrderOfDuration(AirBooking esql){//8
 		//List flight to destination in order of duration (i.e. Airline name, flightNum, origin, destination, duration, plane)
 	}
 	
+	/*Find the number of empty seats for a given flight on a given date. You should print flight
+ 	* number, origin, destination, departure date, booked seats, total number of seats, and
+ 	* number of available seats.
+ 	*/
 	public static void FindNumberOfAvailableSeatsForFlight(AirBooking esql){//9
 		//
 		
