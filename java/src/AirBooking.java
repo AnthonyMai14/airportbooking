@@ -323,12 +323,13 @@ public class AirBooking{
 			//Get last pId in database
 			List<List<String>> queryResult = esql.executeQueryAndReturnResult("SELECT MAX(pID) FROM Passenger;");
 			String retrieve_pid_from_query = "";
-
-			if (queryResult.size() == 0) {
-				retrieve_pid_from_query = "0";
+			//if the database is NOT empty, get the preceding pid
+			//else note that this passenger is the first entry 
+			if (!queryResult.empty()) {
+				retrieve_pid_from_query = queryResult.get(0).get(0);
 			}
 			else {
-				retrieve_pid_from_query = queryResult.get(0).get(0);
+				retrieve_pid_from_query = "0";
 			}
 			int num_pId = Integer.parseInt(retrieve_pid_from_query);
 			num_pId += 1;
