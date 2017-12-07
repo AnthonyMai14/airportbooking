@@ -296,9 +296,42 @@ public class AirBooking{
 		}while (true);
 		return input;
 	}//end readChoice
-	
+	/*Add a new passenger into the database. You should provide an interface that takes as
+ 	* input the information of a new passenger (i.e. passport number, full name, birth date e.t.c)
+ 	* and checks if the provided information are valid based on the constrains of the database schema.
+ 	*/
 	public static void AddPassenger(AirBooking esql){//1
 		//Add a new passenger to the database
+		try {
+
+			//Add a new passenger to the database
+			String query = "INSERT INTO Passenger VALUES(\'";
+									
+			System.out.print("\tEnter passenger's full name: ");
+			String pname = in.readLine();
+			// TODO: Check if pname is valid (i.e. Char 20)
+			System.out.print("\tEnter " + pname + "\'s passport number: ");
+			String pNum = in.readLine();
+			// TODO: Check if pNum valid
+			System.out.print("\tEnter " + pname + "\'s birthday (i.e. M/D/YYYY): ");
+			String pdate = in.readLine();
+			// TODO: Check is pdate is valid (i.e. DATE)
+			System.out.print("\tEnter " + pname + "\'s country: ");
+			String pcountry = in.readLine();
+			
+			//Get last pId in database
+			List<List<String>> queryResult = esql.executeQueryAndReturnResult("SELECT MAX(pID) FROM Passenger;");
+			String retrieve_pid_from_query = queryResult.get(0).get(0);
+			int num_pId = Integer.parseInt(retrieve_pid_from_query);
+			num_pId += 1;
+			String pId = Integer.toString(num_pId);
+			query += pId + "\',\'" + pNum + "\',\'" + pname + "\',\'" + pdate + "\',\'" + pcountry + "\');";
+			
+			esql.executeUpdate(query);
+		}
+		catch(Exception e){
+			System.err.println (e.getMessage());
+		}
 	}
 	
 	public static void BookFlight(AirBooking esql){//2
