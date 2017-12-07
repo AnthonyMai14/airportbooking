@@ -365,7 +365,7 @@ public class AirBooking{
  	* performing the insert. 
  	*/
 	public static void TakeCustomerReview(AirBooking esql){//3
-		try{
+		/*try{
 			//Insert customer review into the ratings table
 			String query = "INSERT INTO Ratings VALUES(\'";
 		
@@ -383,11 +383,17 @@ public class AirBooking{
 		}
 		catch(Exception e){
 			System.err.println (e.getMessage());		
-		}
+		}*/
 	}
 	
 	public static void InsertOrUpdateRouteForAirline(AirBooking esql){//4
 		//Insert a new route for the airline
+		/*try{
+			
+		}
+		catch(Exception e){
+			System.err.println (e.getMessage());
+		}*/
 	}
 	
 	/*This function will allow you to list all available flights between two cities. A booking
@@ -396,12 +402,22 @@ public class AirBooking{
 	*/
 	public static void ListAvailableFlightsBetweenOriginAndDestination(AirBooking esql) throws Exception{//5
 		//List all flights between origin and distination (i.e. flightNum,origin,destination,plane,duration)
-		try{
+		/*try{
+			//Ask user for origin
+			System.out.print("Origin: ");
+			String origin = in.readLine();
+			//TODO: Check to see if valid origin
+			System.out.print("Destination: ");
+			String destination = in.readLine();
+			//TODO: Check to see if valid destination (i.e. do while loop)
+			//TODO: Finish query
+			String query = "SELECT flightNum, plane, duration from Flight WHERE origin = "
 			
+			//TODO: execute query
 		}
 		catch(Exception e){
 			System.err.println (e.getMessage());		
-		}
+		}*/
 	}
 	/*This function will return a list of the k-most popular destinations depending on the
  	* number of flights offered to that specific destination. You should print out the name of
@@ -410,12 +426,12 @@ public class AirBooking{
 	*/
 	public static void ListMostPopularDestinations(AirBooking esql){//6
 		//Print the k most popular destinations based on the number of flights offered to them (i.e. destination, choices)
-		try{
+		/*try{
 			
 		}
 		catch(Exception e){
 			System.err.println (e.getMessage());		
-		}
+		}*/
 
 	}
 		
@@ -425,12 +441,12 @@ public class AirBooking{
 	*/
 	public static void ListHighestRatedRoutes(AirBooking esql){//7
 		//List the k highest rated Routes (i.e. Airline Name, flightNum, Avg_Score)
-		try{
-			
+		/*try{
+					
 		}
 		catch(Exception e){
 			System.err.println (e.getMessage());		
-		}
+		}*/
 
 	}
 	
@@ -440,12 +456,12 @@ public class AirBooking{
  	*/
 	public static void ListFlightFromOriginToDestinationInOrderOfDuration(AirBooking esql){//8
 		//List flight to destination in order of duration (i.e. Airline name, flightNum, origin, destination, duration, plane)
-		try{
+		/*try{
 			
 		}
 		catch(Exception e){
 			System.err.println (e.getMessage());		
-		}
+		}*/
 
 	}
 	
@@ -455,12 +471,12 @@ public class AirBooking{
  	*/
 	public static void FindNumberOfAvailableSeatsForFlight(AirBooking esql){//9
 		//
-		try{
+		/*try{
 			
 		}
 		catch(Exception e){
 			System.err.println (e.getMessage());		
-		}
+		}*/
 
 	}
 	
