@@ -325,7 +325,7 @@ public class AirBooking{
 			String retrieve_pid_from_query = "";
 			//if the database is NOT empty, get the preceding pid
 			//else note that this passenger is the first entry 
-			if (!queryResult.empty()) {
+			if (!queryResult.isEmpty()) {
 				retrieve_pid_from_query = queryResult.get(0).get(0);
 			}
 			else {
@@ -401,7 +401,7 @@ public class AirBooking{
  	* You should print flight number, origin, destination, plane, and duration of flight.
 	*/
 	public static void ListAvailableFlightsBetweenOriginAndDestination(AirBooking esql) throws Exception{//5
-		//List all flights between origin and distination (i.e. flightNum,origin,destination,plane,duration)
+		//List all flights between origin and distinatiInsertOrUpdateRouteForAirlineon (i.e. flightNum,origin,destination,plane,duration)
 		/*try{
 			//Ask user for origin
 			System.out.print("Origin: ");
