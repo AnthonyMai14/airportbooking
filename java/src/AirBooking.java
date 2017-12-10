@@ -429,12 +429,82 @@ public class AirBooking{
 	
 	public static void InsertOrUpdateRouteForAirline(AirBooking esql){//4
 		//Insert a new route for the airline
+		boolean keepon = true;
+		while(keepon){
+			System.out.println("\n-INSERT/UPDATE ROUTE MENU-");
+			System.out.println("1. Insert Route");
+			System.out.println("2. Update Route");
+			System.out.println("3. Back to MAIN MENU");
+			
+			switch (readChoice()){
+					case 1: InsertRoute(esql);break;
+					case 2: break;
+					case 3: keepon = false; break;
+			
+			
+			}
+		}
 		/*try{
 			
 		}
 		catch(Exception e){
 			System.err.println (e.getMessage());
 		}*/
+	}
+	
+	public static void InsertRoute(AirBooking esql){//4.1
+		try{
+			String query = "INSERT INTO Flight VALUES(\'";
+			System.out.println("\nEnter values (!q to EXIT): ");
+			
+			System.out.print("Enter Airline ID: ");
+			String airId = in.readLine();
+			//TODO: check valid airId && not duplicate
+			if ( airId.equals("!q")) return;
+			
+			System.out.print("Enter Flight#:");
+			String flightNum = in.readLine();
+			//TODO: check valid flightNum && not duplicate
+			if ( flightNum.equals("!q")) return;
+			
+			System.out.print("Enter Origin:");
+			String origin= in.readLine();
+			//TODO: check valid origin
+			if ( origin.equals("!q")) return;
+			
+			System.out.print("Enter Destination");
+			String destination = in.readLine();
+			//TODO: check valid destination
+			if ( destination.equals("!q")) return;
+			
+			System.out.print("Enter Plane:");
+			String plane = in.readLine();
+			//TODO: check valid plane
+			if ( plane.equals("!q")) return;
+			
+			System.out.print("Enter Seats in Plane: ");
+			String seats = in.readLine();
+			//TODO: check valid seats
+			if ( seats.equals("!q")) return;
+			
+			System.out.print("Enter Duration of flight:");
+			String duration = in.readLine();
+			//TODO: check valid duration
+			if ( duration.equals("!q")) return;
+			
+			//add to Flight table
+			query += airId + "\',\'" + flightNum + "\',\'" + origin + "\',\'" + destination;
+			query += "\',\'" + plane + "\',\'" + seats + "\',\'" + duration + "\');";
+			
+			esql.executeUpdate(query);
+			}
+			catch(Exception e){
+				System.err.println (e.getMessage());
+			}
+	}
+	
+	public static void UpdateRoute(AirBooking esql){//4.2
+		return;
 	}
 	
 	/*This function will allow you to list all available flights between two cities. A booking
