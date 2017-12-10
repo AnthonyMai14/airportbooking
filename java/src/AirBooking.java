@@ -384,25 +384,6 @@ public class AirBooking{
  	* performing the insert. 
  	*/
 	public static void TakeCustomerReview(AirBooking esql){//3
-		//-Customer Review Menu-
-		boolean keepon = true;
-		while(keepon){
-			System.out.println("\n-CUSTOMER REVIEW MENU-");
-			System.out.println("1. View Customer Review");
-			System.out.println("2. Insert New Rating Record");
-			System.out.println("3. Back to MAIN MENU");
-			
-			switch (readChoice()){
-					case 1: break; //TODO
-					case 2: InsertNewRatingRecord(esql); break;
-					case 3: keepon = false; break;
-			
-			
-			}
-		}
-	}
-	
-	public static void InsertNewRatingRecord(AirBooking esql){//3.2
 		try {
 				System.out.println();
 				//Insert customer review into the ratings table
@@ -418,7 +399,7 @@ public class AirBooking{
 				//Check if passenger was actually on the flight
 				if(PassengerBookOnFlight(esql, flightNum, pId) == 1){
 					//Set Score
-					System.out.print("Score for Flight #" + flightNum + ": ");
+					System.out.print("How was Flight #" + flightNum + "[Rate: 0 (bad) to 5 (good): ");
 					String score = in.readLine();
 					//Set comment
 					System.out.print("Comment: ");
@@ -501,12 +482,51 @@ public class AirBooking{
 	*/
 	public static void ListHighestRatedRoutes(AirBooking esql){//7
 		//List the k highest rated Routes (i.e. Airline Name, flightNum, Avg_Score)
-		/*try{
-					
+		try{
+			List<List<String>> queryResult;
+			boolean flag;
+			int k_num;
+			do{
+				System.out.print("\nEnter the number of highest rating routes you would like to view: ");
+				String k = in.readLine();
+				k_num = Integer.parseInt(k);
+				String query = "SELECT flightNum, AVG(score) FROM Ratings GROUP BY flightNum, score ORDER BY score DESC, flightNum ASC;";
+				//TODO: order by origin & destination
+				queryResult = esql.executeQueryAndReturnResult(query);
+				int querySize = queryResult.size();
+				flag = false;
+				if(querySize < k_num) {
+					String diff = Integer.toString(k_num - querySize); 
+					System.out.println("The selected number is " + diff + " greater than the number of flights in the database.");
+					flag = true;
+				}
+			}while(flag);
+			System.out.println("-HIGHEST RATED ROUTES-");
+			for (int i = 0; i < k_num; ++i) {
+				String flightNum = queryResult.get(i).get(0);
+				String score_avg = queryResult.get(i).get(1).substring(0,3);
+				
+				String query = "SELECT airId, origin, destination, plane, seats FROM Flight WHERE flightNum = \'" + flightNum + "\';";
+				List<List<String>> flightQuery = esql.executeQueryAndReturnResult(query);
+				String airId = flightQuery.get(0).get(0);
+				String origin = flightQuery.get(0).get(1);
+				String destination = flightQuery.get(0).get(2);
+				String plane = flightQuery.get(0).get(3);
+				String seats = flightQuery.get(0).get(4);
+				
+				//just for formatting output
+				if (i < 9) System.out.print("  ");
+				else if (i < 99) System.out.print(" ");
+				
+				System.out.print(Integer.toString(i + 1));
+				System.out.print(". ");
+				System.out.print("Flight #:" + flightNum + " | Avg Score: " + score_avg + " | Origin: " + origin + " | Destination: " + destination);
+				System.out.println(" | Plane: " + plane + " | Seats: " + seats); 
+			}	
 		}
 		catch(Exception e){
 			System.err.println (e.getMessage());		
-		}*/
+		}
 
 	}
 	
@@ -530,13 +550,18 @@ public class AirBooking{
  	* number of available seats.
  	*/
 	public static void FindNumberOfAvailableSeatsForFlight(AirBooking esql){//9
-		//
-		/*try{
-			
+		try{
+			System.out.print("Date Departure: ");
+			String date = in.readLine();
+			//TODO: check if there is a flight for date
+				//TODO: find 
+				//TODO: count(flightNum) in booking
+				//TODO: seat - count(flightNum)
+				
 		}
 		catch(Exception e){
 			System.err.println (e.getMessage());		
-		}*/
+		}
 
 	}
 	
