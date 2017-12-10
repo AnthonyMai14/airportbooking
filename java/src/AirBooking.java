@@ -297,7 +297,38 @@ public class AirBooking{
 		return input;
 	}//end readChoice
 	
-	/*Add a new passenger into the database. You should provide an interface that takes as
+	/*
+	 * Get the max id in from table
+	 */
+	public static String GetNextValue(AirBooking esql, String id, String table){
+		String next_id = "";
+		try{
+			//Get last pId in database
+			List<List<String>> queryResult = esql.executeQueryAndReturnResult("SELECT MAX(" + id + ") FROM " + table + ";");
+			//if the database is NOT empty, get the preceding pid
+			//else note that this passenger is the first entry 
+			String retrieve_pid_from_query = "";
+			if (!queryResult.isEmpty()) {
+				retrieve_pid_from_query = queryResult.get(0).get(0);
+			}
+			else {
+				retrieve_pid_from_query = "0";
+			}
+			
+			int num_id = Integer.parseInt(retrieve_pid_from_query);
+			num_id += 1;
+			
+			next_id = Integer.toString(num_id);
+		}
+		catch(Exception e){
+			System.err.println (e.getMessage());
+		}
+		
+		return next_id;
+	}
+	
+	/*
+	* Add a new passenger into the database. You should provide an interface that takes as
  	* input the information of a new passenger (i.e. passport number, full name, birth date e.t.c)
  	* and checks if the provided information are valid based on the constrains of the database schema.
  	*/
@@ -320,20 +351,7 @@ public class AirBooking{
 			System.out.print("\tEnter " + pname + "\'s country: ");
 			String pcountry = in.readLine();
 			
-			//Get last pId in database
-			List<List<String>> queryResult = esql.executeQueryAndReturnResult("SELECT MAX(pID) FROM Passenger;");
-			String retrieve_pid_from_query = "";
-			//if the database is NOT empty, get the preceding pid
-			//else note that this passenger is the first entry 
-			if (!queryResult.isEmpty()) {
-				retrieve_pid_from_query = queryResult.get(0).get(0);
-			}
-			else {
-				retrieve_pid_from_query = "0";
-			}
-			int num_pId = Integer.parseInt(retrieve_pid_from_query);
-			num_pId += 1;
-			String pId = Integer.toString(num_pId);
+			String pId = GetNextValue(esql, "pID", "Passenger");
 			query += pId + "\',\'" + pNum + "\',\'" + pname + "\',\'" + pdate + "\',\'" + pcountry + "\');";
 			
 			esql.executeUpdate(query);
@@ -343,12 +361,13 @@ public class AirBooking{
 		}
 	}
 
-	/*Book a flight for an existing passenger. This function will enable you to book a flight
- 	* from a given origin to a given destination for an existing customer. You need to provide 
- 	* pg. 3 an interface that accepts the necessary information for booking a flight and checks if all
- 	* inputs given by the user are valid based on the defined schema and the information stored
- 	* in the database
- 	* */	
+	/*
+	 * Book a flight for an existing passenger. This function will enable you to book a flight
+ 	 * from a given origin to a given destination for an existing customer. You need to provide 
+ 	 * pg. 3 an interface that accepts the necessary information for booking a flight and checks if all
+ 	 * inputs given by the user are valid based on the defined schema and the information stored
+ 	 * in the database
+ 	 */	
 	public static void BookFlight(AirBooking esql){//2
 		//Book Flight for an existing customer
 		try{
@@ -365,26 +384,67 @@ public class AirBooking{
  	* performing the insert. 
  	*/
 	public static void TakeCustomerReview(AirBooking esql){//3
-		/*try{
-			//Insert customer review into the ratings table
-			String query = "INSERT INTO Ratings VALUES(\'";
-		
-			//Retrieve pId
-			System.out.print("Passenger ID: ");
-			String pId = in.readLine();
-			//Retrieve flightNum
-			System.out.print("Flight Number: ");
-			String flightNum = in.readLine();
-			//TODO: Check if passenger was actually on the flight
-			//TODO: Get Score
-			//TODO: Get comment
+		//-Customer Review Menu-
+		boolean keepon = true;
+		while(keepon){
+			System.out.println("\n-CUSTOMER REVIEW MENU-");
+			System.out.println("1. View Customer Review");
+			System.out.println("2. Insert New Rating Record");
+			System.out.println("3. Back to MAIN MENU");
 			
-			//TODO: execute query
+			switch (readChoice()){
+					case 1: break; //TODO
+					case 2: InsertNewRatingRecord(esql); break;
+					case 3: keepon = false; break;
+			
+			
+			}
+		}
+	}
+	
+	public static void InsertNewRatingRecord(AirBooking esql){//3.2
+		try {
+				System.out.println();
+				//Insert customer review into the ratings table
+				String query = "INSERT INTO Ratings VALUES(\'";
+				//Retrieve flightNum
+				System.out.print("Flight Number: ");
+				String flightNum = in.readLine();
+				//TODO: Check if valid flightNum
+				//Retrieve pId
+				System.out.print("Passenger ID: ");
+				String pId = in.readLine();
+				//TODO: Check if valid pId
+				//Check if passenger was actually on the flight
+				if(PassengerBookOnFlight(esql, flightNum, pId) == 1){
+					//Set Score
+					System.out.print("Score for Flight #" + flightNum + ": ");
+					String score = in.readLine();
+					//Set comment
+					System.out.print("Comment: ");
+					String comment = in.readLine();
+					//TODO: execute query
+					String rId = GetNextValue(esql, "rID", "Ratings");
+					query += rId + "\',\'" + pId + "\',\'" + flightNum + "\',\'" + score + "\',\'" + comment + "\');";
+					esql.executeUpdate(query);
+					
+				}
+				else{
+					System.out.println("Passenger did not book this flight");
+				}
 		}
 		catch(Exception e){
 			System.err.println (e.getMessage());		
-		}*/
+		}
 	}
+	
+	/*
+	 * TODO: Check if passenger was actually on the flight
+	 */
+	public static int PassengerBookOnFlight(AirBooking esql, String flightNum, String pId){//3.2.1
+		return 1;
+	}
+	
 	
 	public static void InsertOrUpdateRouteForAirline(AirBooking esql){//4
 		//Insert a new route for the airline
