@@ -345,20 +345,21 @@ public class AirBooking{
 			do {
 				System.out.print("\tEnter passenger's full name: ");
 				pname = in.readLine();
-			`	if (pname.length() > 24){ 
+				if (pname.length() > 24){ 
 					System.out.println("\tERROR: Name must be less than 24 characters (including white space)");
 					pass = false;
 				}
 				else { pass = true; }
 				
-				Pattern pattern = Pattern.compile("[a-zA-Z]*", " ");
+				Pattern pattern = Pattern.compile("[a-zA-Z ]*");
 				Matcher matcher = pattern.matcher(pname);
-				if (!matcher) {
+				boolean b = matcher.matches();
+				if (!b) {
 					System.out.println("\tERROR: Name must be alphabet (exception is <SPACE>)");
 					pass = false;
 				}
 				else{ pass = true; } 
-			while(!pass);
+			}while(!pass);
 			
 			do {
 				System.out.print("\tEnter " + pname + "\'s passport number: ");
@@ -371,7 +372,8 @@ public class AirBooking{
 				
 				Pattern pattern = Pattern.compile("[A-Z]*");
 				Matcher matcher = pattern.matcher(pNum);
-				if (!matcher) {
+				boolean b = matcher.matches();
+				if (!b) {
 					System.out.println("\tERROR: Name must be UPPER CASE ALPHABET");
 					pass = false;
 				}
@@ -385,7 +387,7 @@ public class AirBooking{
 					//TODO
 				}
 				
-			}while(!pass)
+			}while(!pass);
 			
 			do{
 				System.out.print("\tEnter " + pname + "\'s country: ");
@@ -396,9 +398,10 @@ public class AirBooking{
 				}
 				else { pass = true; }
 				
-				Pattern pattern = Pattern.compile("[a-zA-Z]*", " ");
+				Pattern pattern = Pattern.compile("[a-zA-Z ]*");
 				Matcher matcher = pattern.matcher(pname);
-				if (!matcher) {
+				boolean b = matcher.matches();
+				if (!b) {
 					System.out.println("\tERROR: Name must be alphabet (exception is <SPACE>)");
 					pass = false;
 				}
@@ -410,7 +413,7 @@ public class AirBooking{
 			
 			esql.executeUpdate(query);
 			
-		}
+		}	
 		catch(Exception e){
 			System.err.println (e.getMessage());
 		}
@@ -449,7 +452,7 @@ public class AirBooking{
 				
 				do{//Retrieve flightNum
 					System.out.print("Flight Number: ");
-					lightNum = in.readLine();
+					flightNum = in.readLine();
 					
 					if (flightNum.length() > 8){ 
 					System.out.println("\tERROR: Flight Number must be less than 8 characters");
@@ -458,8 +461,9 @@ public class AirBooking{
 					else { pass = true; }
 					
 					Pattern pattern = Pattern.compile("[A-Z0-9]*");
-					Matcher matcher = pattern.matcher(pname);
-					if (!matcher) {
+					Matcher matcher = pattern.matcher(flightNum);
+					boolean b = matcher.matches();
+					if (!b) {
 						System.out.println("\tERROR: Name must be UPPERCASE ALPHABET and/or numeric (0-9)");
 						pass = false;
 					}
@@ -470,10 +474,11 @@ public class AirBooking{
 				//Retrieve pId
 				do{
 					System.out.print("Passenger ID: ");
-					String pId = in.readLine();
+					pId = in.readLine();
 					Pattern pattern = Pattern.compile("[0-9]*");
-					Matcher matcher = pattern.matcher(pname);
-					if (!matcher) {
+					Matcher matcher = pattern.matcher(pId);
+					boolean b = matcher.matches();
+					if (!b) {
 						System.out.println("\tERROR: Name must be numeric (0-9)");
 						pass = false;
 					}
@@ -490,10 +495,11 @@ public class AirBooking{
 					//Set Score
 					do{
 						System.out.print("How was Flight #" + flightNum + "[Rate: 0 (bad) to 5 (good): ");
-						String score = in.readLine();
+						score = in.readLine();
 						Pattern pattern = Pattern.compile("[0-5]*");
-						Matcher matcher = pattern.matcher(pname);
-						if (!matcher) {
+						Matcher matcher = pattern.matcher(score);
+						boolean b = matcher.matches();
+						if (!b) {
 							System.out.println("\tERROR: Name must be numeric (0-5)");
 							pass = false;
 						}
@@ -501,7 +507,7 @@ public class AirBooking{
 					}while(!pass);
 					//Set comment
 					System.out.print("Comment: ");
-					String comment = in.readLine();
+					comment = in.readLine();
 					//TODO: execute query
 					String rId = GetNextValue(esql, "rID", "Ratings");
 					query += rId + "\',\'" + pId + "\',\'" + flightNum + "\',\'" + score + "\',\'" + comment + "\');";
@@ -521,9 +527,15 @@ public class AirBooking{
 	 * TODO: Check if passenger was actually on the flight
 	 */
 	public static int PassengerBookOnFlight(AirBooking esql, String flightNum, String pId){//3.2.1
-		String query = "SELECT pID FROM Booking WHERE pid=\'" + pId + "\' AND flightNum=\'" + flightNum + "\');";
-		List<List<String>> queryResult = esql.executeQueryAndReturnResult(query);
-		if (queryResult.isEmpty()) { return 0; }
+		try{	
+			String query = "SELECT pID FROM Booking WHERE pid=\'" + pId + "\' AND flightNum=\'" + flightNum + "\');";
+			List<List<String>> queryResult = esql.executeQueryAndReturnResult(query);
+			if (queryResult.isEmpty()) { return 0; }
+			
+			}
+		catch(Exception e){
+			System.err.println (e.getMessage());		
+		}
 		return 1;
 	}
 	
