@@ -399,7 +399,6 @@ public class AirBooking{
 					pass = false;
 				}
 				else if(!month_valid(pdateArr[0]) || !day_valid(pdateArr[1]) || !year_valid(pdateArr[2])){
-					System.out.println("yeet inside ");
 					pass = false;
 				}
 				else{
@@ -439,7 +438,7 @@ public class AirBooking{
 		}
 	}
 	
-	public static boolean month_valid(String month) {
+	public static boolean month_valid(String month) {//1.2
 		//month
 		boolean pass = true;
 		if (month.length() == 2) {//double digit month
@@ -458,7 +457,7 @@ public class AirBooking{
 				pass = false;
 			}
 		}
-		else if (month.length() == 1) {//single digit month
+		else if (month.length() == 1) {//single digit month 1.3
 			//check if valid values
 			Pattern pattern1 = Pattern.compile("[1-9]*");
 			Matcher matcher1 = pattern1.matcher(month);
@@ -482,7 +481,7 @@ public class AirBooking{
 		return pass;
 	}
 	
-	public static boolean day_valid(String day) {
+	public static boolean day_valid(String day) {//1.4
 		boolean pass = true;
 		//day
 		if (day.length() == 2) {//double digit days
@@ -603,78 +602,97 @@ public class AirBooking{
 						System.out.println("\tERROR: Name must be UPPERCASE ALPHABET and/or numeric (0-9)");
 						pass = false;
 					}
+					else if (!ExistFlight(esql, flightNum)){
+						System.out.println("\tERROR: Invalid Flight!");
+						pass = false;
+					}
 					else{ pass = true; }
 					
 				}while(!pass);
 				
 				//Retrieve pId
-				do{
-					System.out.print("Passenger ID: ");
-					pId = in.readLine();
-					
-					Pattern pattern = Pattern.compile("[0-9]*");
-					Matcher matcher = pattern.matcher(pId);
-					boolean b = matcher.matches();
-					
-					if (!b) {
-						System.out.println("\t***ERROR: Name must be numeric (0-9)");
-						pass = false;
-					}
-					else if ((Integer.parseInt(GetNextValue(esql, "pId", "Passenger")) - 1) < Integer.parseInt(pId)) {
-						System.out.println("\t***ERROR: Invalid Passenger! PID to high!");
-						pass = false;
-					}
-					else{ pass = true; }
-					
-				}while(!pass);
-				
-				//Check if passenger was actually on the flight
-				if(PassengerBookOnFlight(esql, flightNum, pId) == 1){
-					//Set Score
+				do {
 					do{
-						System.out.print("How was Flight #" + flightNum + "[Rate: 0 (bad) to 5 (good): ");
-						score = in.readLine();
-						Pattern pattern = Pattern.compile("[0-5]*");
-						Matcher matcher = pattern.matcher(score);
+						System.out.print("Passenger ID: ");
+						pId = in.readLine();
+						
+						Pattern pattern = Pattern.compile("[0-9]*");
+						Matcher matcher = pattern.matcher(pId);
 						boolean b = matcher.matches();
+						
 						if (!b) {
-							System.out.println("\t***ERROR: Name must be numeric (0-5)");
+							System.out.println("\t***ERROR: Name must be numeric (0-9)");
+							pass = false;
+						}
+						else if ((Integer.parseInt(GetNextValue(esql, "pId", "Passenger")) - 1) < Integer.parseInt(pId)) {
+							System.out.println("\t***ERROR: Invalid Passenger!");
 							pass = false;
 						}
 						else{ pass = true; }
+						
 					}while(!pass);
-					//Set comment
-					System.out.print("Comment: ");
-					comment = in.readLine();
-					//execute query
-					String rId = GetNextValue(esql, "rID", "Ratings");
-					query += rId + "\',\'" + pId + "\',\'" + flightNum + "\',\'" + score + "\',\'" + comment + "\');";
-					esql.executeUpdate(query);
-					
-				}
-				else{
-					System.out.println("Passenger did not book this flight");
-				}
+				
+				//Check if passenger was actually on the flight
+				
+					if(!PassengerBookOnFlight(esql, flightNum, pId)){//LINE 667
+						System.out.println("Passenger did not book this flight");
+						pass = false;
+					}
+					else{
+						pass = true;
+						//Set Score
+						do{
+							System.out.print("How was Flight #" + flightNum + "[Rate: 0 (bad) to 5 (good)]: ");
+							score = in.readLine();
+							Pattern pattern = Pattern.compile("[0-5]*");
+							Matcher matcher = pattern.matcher(score);
+							boolean b = matcher.matches();
+							if (!b) {
+								System.out.println("\t***ERROR: Name must be numeric (0-5)");
+								pass = false;
+							}
+							else{ pass = true; }
+						}while(!pass);
+						//Set comment
+						System.out.print("Comment: ");
+						comment = in.readLine();
+						//execute query
+						String rId = GetNextValue(esql, "rID", "Ratings");
+						query += rId + "\',\'" + pId + "\',\'" + flightNum + "\',\'" + score + "\',\'" + comment + "\');";
+						esql.executeUpdate(query);
+					}
+				}while(!pass);
 		}
 		catch(Exception e){
 			System.err.println (e.getMessage());		
 		}
 	}
-	
-	/*
-	 * TODO: Check if passenger was actually on the flight
-	 */
-	public static int PassengerBookOnFlight(AirBooking esql, String flightNum, String pId){//3.2.1
+	public static boolean ExistFlight(AirBooking esql, String flightNum){//3.2.1
 		try{	
-			String query = "SELECT pID FROM Booking WHERE pid=\'" + pId + "\' AND flightNum=\'" + flightNum + "\');";
+			String query = "SELECT flightNum FROM Flight WHERE flightNum=\'" + flightNum+ "\';";
 			List<List<String>> queryResult = esql.executeQueryAndReturnResult(query);
-			if (queryResult.isEmpty()) { return 0; }
+			if (queryResult.isEmpty()) { return false; }
 			
 			}
 		catch(Exception e){
 			System.err.println (e.getMessage());		
 		}
-		return 1;
+		return true;
+	}
+	/*
+	 * Check if passenger was actually on the flight
+	 */
+	public static boolean PassengerBookOnFlight(AirBooking esql, String flightNum, String pId){//3.2.2
+		try{	
+			String query = "SELECT pID FROM Booking WHERE pID=" + pId + " AND flightNum=\'" + flightNum+ "\';";
+			List<List<String>> queryResult = esql.executeQueryAndReturnResult(query);
+			if (queryResult.isEmpty()) { return false; }
+			
+			}
+		catch(Exception e){
+			System.err.println (e.getMessage());		
+		}
+		return true;
 	}
 	
 	
@@ -705,18 +723,44 @@ public class AirBooking{
 	
 	public static void InsertRoute(AirBooking esql){//4.1
 		try{
+			
+			String airId, flightNum;
+			boolean pass = true;
+			 
 			String query = "INSERT INTO Flight VALUES(\'";
 			System.out.println("\nEnter values (!q to EXIT): ");
 			
 			System.out.print("Enter Airline ID: ");
-			String airId = in.readLine();
-			//TODO: check valid airId && not duplicate
+			airId = in.readLine();
+			//TODO: check valid airId
+			//bugg: does not check for duplicate
 			if ( airId.equals("!q")) return;
 			
-			System.out.print("Enter Flight#:");
-			String flightNum = in.readLine();
-			//TODO: check valid flightNum && not duplicate
-			if ( flightNum.equals("!q")) return;
+			
+			do{//Retrieve flightNum
+				System.out.print("Flight Number: ");
+				flightNum = in.readLine();
+				
+				Pattern pattern = Pattern.compile("[A-Z0-9]*");
+				Matcher matcher = pattern.matcher(flightNum);
+				boolean b = matcher.matches();
+				
+				if ( flightNum.equals("!q")) return;
+				else if (flightNum.length() > 8){ 
+					System.out.println("\tERROR: Flight Number must be less than 8 characters");
+					pass = false;
+				}
+				else if (!b) {
+					System.out.println("\tERROR: Name must be UPPERCASE ALPHABET and/or numeric (0-9)");
+					pass = false;
+				}
+				else if (!ExistFlight(esql, flightNum)){
+					System.out.println("\tERROR: Invalid Flight!");
+					pass = false;
+				}
+				else{ pass = true; }
+				
+			}while(!pass);
 			
 			System.out.print("Enter Origin:");
 			String origin= in.readLine();
@@ -872,12 +916,68 @@ public class AirBooking{
  	*/
 	public static void FindNumberOfAvailableSeatsForFlight(AirBooking esql){//9
 		try{
-			System.out.print("Date Departure: ");
-			String date = in.readLine();
-			//TODO: check if there is a flight for date
-				//TODO: find 
-				//TODO: count(flightNum) in booking
-				//TODO: seat - count(flightNum)
+				String date, flightNum;
+				boolean pass = true;
+				
+				do {//check if valid date
+					System.out.print("Date Departure: ");
+					date = in.readLine();
+					String [] pdateArr = date.split("/", 3);
+					/*for (int i = 0; i < pdateArr.length; ++i){
+						System.out.println(i + pdateArr[i]);
+					}*/
+					if (pdateArr.length != 3) {
+						System.out.println("\t***ERROR: Invalid date format");
+						pass = false;
+					}
+					else if(!month_valid(pdateArr[0]) || !day_valid(pdateArr[1]) || !year_valid(pdateArr[2])){
+						pass = false;
+					}
+					else{
+						pass = true;
+					}
+				}while(!pass);
+				
+				do{//check if valid flight number
+					System.out.print("Flight Number: ");
+					flightNum = in.readLine();
+					
+					Pattern pattern = Pattern.compile("[A-Z0-9]*");
+					Matcher matcher = pattern.matcher(flightNum);
+					boolean b = matcher.matches();
+					
+					if (flightNum.length() > 8){ 
+						System.out.println("\tERROR: Flight Number must be less than 8 characters");
+						pass = false;
+					}
+					else if (!b) {
+						System.out.println("\tERROR: Name must be UPPERCASE ALPHABET and/or numeric (0-9)");
+						pass = false;
+					}
+					else if (!ExistFlight(esql, flightNum)){
+						System.out.println("\tERROR: Invalid Flight!");
+						pass = false;
+					}
+					else{ pass = true; }
+					
+				}while(!pass);
+				
+				//find number of people already booked
+				String query = "SELECT COUNT(pID) FROM Booking WHERE departure='" + date +"\' AND flightNum=\'" + flightNum + "\';";
+				List<List<String>> bookingQuery = esql.executeQueryAndReturnResult(query);
+				String booked_seats = bookingQuery.get(0).get(0);
+				
+				query = "SELECT origin, destination, seats FROM Flight WHERE flightNum = \'" + flightNum + "\';";
+				List<List<String>> flightQuery = esql.executeQueryAndReturnResult(query);
+				String origin = flightQuery.get(0).get(0);
+				String destination = flightQuery.get(0).get(1);
+				String seats = flightQuery.get(0).get(2);
+				
+				//find available seats
+				String avail_seats = Integer.toString(Integer.parseInt(seats) - Integer.parseInt(booked_seats));
+				
+				System.out.print("Flight #:" + flightNum +  " | Origin: " + origin + " | Destination: " + destination);
+				System.out.println(" | Seats: " + seats + "| Booked Seats: " + booked_seats + " | Available Seats: " + avail_seats);
 				
 		}
 		catch(Exception e){
