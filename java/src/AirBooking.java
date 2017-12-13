@@ -543,7 +543,7 @@ public class AirBooking{
 			pass = false;
 		}
 		else{
-			if (yearInt < 1800 || yearInt > 2017) {
+			if (yearInt < 1900 || yearInt > 2017) {
 				System.out.println("\t***ERROR: Not valid year");
 				pass = false;
 			}
@@ -702,7 +702,7 @@ public class AirBooking{
 		while(keepon){
 			System.out.println("\n-INSERT/UPDATE ROUTE MENU-");
 			System.out.println("1. Insert Route");
-			System.out.println("2. Update Route");
+			System.out.println("2. Update Route (NOT FUNCTIONAL)");
 			System.out.println("3. Back to MAIN MENU");
 			
 			switch (readChoice()){
@@ -724,17 +724,33 @@ public class AirBooking{
 	public static void InsertRoute(AirBooking esql){//4.1
 		try{
 			
-			String airId, flightNum;
+			String airId, flightNum, origin, destination, plane, seats, duration;
 			boolean pass = true;
 			 
 			String query = "INSERT INTO Flight VALUES(\'";
 			System.out.println("\nEnter values (!q to EXIT): ");
 			
-			System.out.print("Enter Airline ID: ");
-			airId = in.readLine();
-			//TODO: check valid airId
-			//bugg: does not check for duplicate
-			if ( airId.equals("!q")) return;
+			
+			do{//Retrieve airId
+				System.out.print("Enter Airline ID: ");
+				airId = in.readLine();
+				
+				Pattern pattern = Pattern.compile("[0-9]*");
+				Matcher matcher = pattern.matcher(airId);
+				boolean b = matcher.matches();
+				//BUGG: doesn't check if flight exist already
+				if ( airId.equals("!q")) return;
+				else if (!b) {
+					System.out.println("\tERROR: Name must be numeric (0-9)");
+					pass = false;
+				}
+				else if(!valid_airline(esql, airId)){
+					System.out.println("\tERROR: Not Valid Airline");
+					pass = false;
+				}
+				else{ pass = true; }
+				
+			}while(!pass);
 			
 			
 			do{//Retrieve flightNum
@@ -754,38 +770,126 @@ public class AirBooking{
 					System.out.println("\tERROR: Name must be UPPERCASE ALPHABET and/or numeric (0-9)");
 					pass = false;
 				}
-				else if (!ExistFlight(esql, flightNum)){
-					System.out.println("\tERROR: Invalid Flight!");
-					pass = false;
-				}
 				else{ pass = true; }
 				
 			}while(!pass);
 			
-			System.out.print("Enter Origin:");
-			String origin= in.readLine();
-			//TODO: check valid origin
-			if ( origin.equals("!q")) return;
+			do
+			{
+				System.out.print("Enter Origin: ");
+				origin= in.readLine();
+				
+				Pattern pattern = Pattern.compile("[a-zA-Z ]*");
+				Matcher matcher = pattern.matcher(origin);
+				boolean b = matcher.matches();
+				
+				
+				//TODO: check valid origin
+				if ( origin.equals("!q")) return;
+				else if(origin.length() > 16) {
+					System.out.println("Invalid origin. Needs to be less than 16 letters");
+					pass = false;
+				}
+				else if (!b){
+					System.out.println("Invalid origin. Please use alpahabet only!");
+					pass = false;
+				}
+				else{
+					pass = true;
+				}
+			} while (!pass);
 			
-			System.out.print("Enter Destination");
-			String destination = in.readLine();
-			//TODO: check valid destination
-			if ( destination.equals("!q")) return;
+			do
+			{
+				System.out.print("Enter Destination: ");
+				destination= in.readLine();
+				
+				Pattern pattern = Pattern.compile("[a-zA-Z ]*");
+				Matcher matcher = pattern.matcher(destination);
+				boolean b = matcher.matches();
+				
+				
+				//check valid destination
+				if ( destination.equals("!q")) return;
+				else if(destination.length() > 16) {
+					System.out.println("Invalid destination. Needs to be less than 16 letters");
+					pass = false;
+				}
+				else if (!b){
+					System.out.println("Invalid destination. Please use alpahabet only!");
+					pass = false;
+				}
+				else{
+					pass = true;
+				}
+			} while (!pass);
 			
-			System.out.print("Enter Plane:");
-			String plane = in.readLine();
-			//TODO: check valid plane
-			if ( plane.equals("!q")) return;
+			do
+			{
+				System.out.print("Enter Plane: ");
+				plane= in.readLine();
+				
+				//check valid plane
+				if ( plane.equals("!q")) return;
+				else if(plane.length() > 16) {
+					System.out.println("Invalid plane. Needs to be less than 16 letters");
+					pass = false;
+				}
+				else{
+					pass = true;
+				}
+			} while (!pass);
+	
+			do
+			{
+				System.out.print("Enter Seats: ");
+				seats= in.readLine();
+				
+				Pattern pattern = Pattern.compile("[0-9]*");
+				Matcher matcher = pattern.matcher(seats);
+				boolean b = matcher.matches();
+				
+				
+				//check valid seats
+				if ( seats.equals("!q")) return;
+				else if (!b){
+					System.out.println("Invalid seats. Please use numberic only!");
+					pass = false;
+				}
+				else if(Integer.parseInt(seats) < 1 || Integer.parseInt(seats)  > 500) {
+					System.out.println("Invalid seats. Seats need to be great than 0 but less than 500");
+					pass = false;
+				}
+				else{
+					pass = true;
+				}
+			} while (!pass);
 			
-			System.out.print("Enter Seats in Plane: ");
-			String seats = in.readLine();
-			//TODO: check valid seats
-			if ( seats.equals("!q")) return;
 			
-			System.out.print("Enter Duration of flight:");
-			String duration = in.readLine();
-			//TODO: check valid duration
-			if ( duration.equals("!q")) return;
+			do
+			{
+				System.out.print("Enter Duration of flight: ");
+				duration= in.readLine();
+				
+				Pattern pattern = Pattern.compile("[0-9]*");
+				Matcher matcher = pattern.matcher(duration);
+				boolean b = matcher.matches();
+				
+				//check valid duration
+				if ( duration.equals("!q")) return;
+				else if (!b){
+					System.out.println("Invalid duration. Please use numberic only!");
+					pass = false;
+				}
+				else if(Integer.parseInt(duration) < 1 || Integer.parseInt(duration)  > 24) {
+					System.out.println("Invalid seats. Seats need to be great than -1 but less than 25");
+					pass = false;
+				}
+				else{
+					pass = true;
+				}
+			} while (!pass);
+	
 			
 			//add to Flight table
 			query += airId + "\',\'" + flightNum + "\',\'" + origin + "\',\'" + destination;
@@ -796,6 +900,19 @@ public class AirBooking{
 			catch(Exception e){
 				System.err.println (e.getMessage());
 			}
+	}
+	
+	public static boolean valid_airline(AirBooking esql, String airId){//4.1.1
+		try{	
+			String query = "SELECT name FROM Airline WHERE airId=\'" + airId+ "\';";
+			List<List<String>> queryResult = esql.executeQueryAndReturnResult(query);
+			if (queryResult.isEmpty()) { return false; }
+			
+			}
+		catch(Exception e){
+			System.err.println (e.getMessage());		
+		}
+		return true;
 	}
 	
 	public static void UpdateRoute(AirBooking esql){//4.2
