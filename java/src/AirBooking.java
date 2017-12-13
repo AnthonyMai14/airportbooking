@@ -345,67 +345,87 @@ public class AirBooking{
 			do {
 				System.out.print("\tEnter passenger's full name: ");
 				pname = in.readLine();
-				if (pname.length() > 24){ 
-					System.out.println("\tERROR: Name must be less than 24 characters (including white space)");
-					pass = false;
-				}
-				else { pass = true; }
 				
 				Pattern pattern = Pattern.compile("[a-zA-Z ]*");
 				Matcher matcher = pattern.matcher(pname);
 				boolean b = matcher.matches();
-				if (!b) {
-					System.out.println("\tERROR: Name must be alphabet (exception is <SPACE>)");
+				
+				
+				if (pname.length() > 24){ 
+					System.out.println("\t***ERROR: Name must be less than 24 characters (including white space)");
 					pass = false;
 				}
-				else{ pass = true; } 
+				else if (!b) {
+					System.out.println("\t***ERROR: Name must be alphabet (exception is <SPACE>)");
+					pass = false;
+				}
+				else{ pass = true; }
+				
 			}while(!pass);
 			
-			do {
+			do {//BUGG: doesn't check if passport number is already taken
 				System.out.print("\tEnter " + pname + "\'s passport number: ");
 				pNum = in.readLine();
-				if (pNum.length() > 8){ 
-					System.out.println("\tERROR: Name must be less than 8 characters");
-					pass = false;
-				}
-				else { pass = true; }
 				
 				Pattern pattern = Pattern.compile("[A-Z]*");
 				Matcher matcher = pattern.matcher(pNum);
 				boolean b = matcher.matches();
-				if (!b) {
-					System.out.println("\tERROR: Name must be UPPER CASE ALPHABET");
+				
+				
+				if (pNum.length() != 8){ 
+					System.out.println("\t***ERROR: Name must be 8 characters");
 					pass = false;
 				}
-				else{ pass = true; } 
+				else if (!b) {
+					System.out.println("\t***ERROR: Name must be UPPER CASE ALPHABET");
+					pass = false;
+				}
+				else{ pass = true; }
+				
 			}while(!pass);
 			
-			do {
+			do {//Bug: doesn't check if a valid date for the month/year. Only checks if valid format & the number of dates/years
 				System.out.print("\tEnter " + pname + "\'s birthday (i.e. M/D/YYYY): ");
 				pdate = in.readLine();
-				for (int i = pdate.length() - 1; i >= 0; --i) {
-					//TODO
-				}
 				
+				
+				
+				String [] pdateArr = pdate.split("/", 3);
+				/*for (int i = 0; i < pdateArr.length; ++i){
+					System.out.println(i + pdateArr[i]);
+				}*/
+				if (pdateArr.length != 3) {
+					System.out.println("\t***ERROR: Invalid date format");
+					pass = false;
+				}
+				else if(!month_valid(pdateArr[0]) || !day_valid(pdateArr[1]) || !year_valid(pdateArr[2])){
+					System.out.println("yeet inside ");
+					pass = false;
+				}
+				else{
+					pass = true;
+				}
 			}while(!pass);
 			
 			do{
 				System.out.print("\tEnter " + pname + "\'s country: ");
 				pcountry = in.readLine();
-				if (pname.length() > 24){ 
-					System.out.println("\tERROR: Name must be less than 24 characters (including white space)");
-					pass = false;
-				}
-				else { pass = true; }
 				
 				Pattern pattern = Pattern.compile("[a-zA-Z ]*");
 				Matcher matcher = pattern.matcher(pname);
 				boolean b = matcher.matches();
-				if (!b) {
-					System.out.println("\tERROR: Name must be alphabet (exception is <SPACE>)");
+				
+				
+				if (pname.length() > 24){ 
+					System.out.println("\t***ERROR: Name must be less than 24 characters (including white space)");
+					pass = false;
+				}
+				else if(!b) {
+					System.out.println("\t***ERROR: Name must be alphabet (exception is <SPACE>)");
 					pass = false;
 				}
 				else{ pass = true; }
+				
 			}while(!pass);
 			
 			String pId = GetNextValue(esql, "pID", "Passenger");
@@ -417,6 +437,123 @@ public class AirBooking{
 		catch(Exception e){
 			System.err.println (e.getMessage());
 		}
+	}
+	
+	public static boolean month_valid(String month) {
+		//month
+		boolean pass = true;
+		if (month.length() == 2) {//double digit month
+			//check if valid values
+			Pattern pattern1 = Pattern.compile("[0-2]*");
+			Matcher matcher1 = pattern1.matcher(month);
+			boolean b1 = matcher1.matches();
+			//convert to int
+			int monthInt = Integer.parseInt(month);
+			if(!b1) {
+				System.out.println("\t***ERROR: Invalid month format");
+				pass = false;
+			}
+			else if (monthInt < 10 || monthInt > 12) {
+				System.out.println("\t***ERROR: Invalid month");
+				pass = false;
+			}
+		}
+		else if (month.length() == 1) {//single digit month
+			//check if valid values
+			Pattern pattern1 = Pattern.compile("[1-9]*");
+			Matcher matcher1 = pattern1.matcher(month);
+			boolean b1 = matcher1.matches();
+			//convert to int
+			int monthInt = Integer.parseInt(month);
+			if(!b1) {
+				System.out.println("\t***ERROR: Invalid month format");
+				pass = false;
+			}
+			else {
+				if (monthInt < 1 || monthInt > 9) {
+					System.out.println("\t***ERROR: Invalid month");
+					pass = false;
+				}
+				else{
+					pass = true;
+				}
+			}
+		}
+		return pass;
+	}
+	
+	public static boolean day_valid(String day) {
+		boolean pass = true;
+		//day
+		if (day.length() == 2) {//double digit days
+			//check if valid values
+			Pattern pattern1 = Pattern.compile("[0-9]*");
+			Matcher matcher1 = pattern1.matcher(day);
+			//convert to int
+			int dayInt = Integer.parseInt(day);
+			boolean b1 = matcher1.matches();
+			
+			if(!b1) {
+				System.out.println("\t***ERROR: Invalid day format");
+				pass = false;
+			}
+			else {						
+				if (dayInt < 10 || dayInt > 31) {//BUGG: doesn't check if month permits that day
+					System.out.println("\t***ERROR: Invalid day");
+					pass = false;
+				}
+				else{
+					pass = true;
+				}
+			}
+		}
+		else if (day.length() == 1) {//single digit DAYS
+			//check if valid values
+			Pattern pattern1 = Pattern.compile("[1-9]*");
+			Matcher matcher1 = pattern1.matcher(day);
+			boolean b1 = matcher1.matches();
+			//convert to int
+			int dayInt = Integer.parseInt(day);
+			if(!b1) {
+				System.out.println("\t***ERROR: Invalid day format");
+				pass = false;
+			}
+			else {
+				if (dayInt < 1 || dayInt > 9) {
+					System.out.println("\t***ERROR: Invalid day");
+					pass = false;
+				}
+				else{
+					pass = true;
+				}
+			}
+		}
+		return pass;
+	}
+	
+	public static boolean year_valid(String year){
+		//year
+		boolean pass = true;			
+		Pattern pattern3 = Pattern.compile("[0-9]*");
+		Matcher matcher3 = pattern3.matcher(year);
+		boolean b3 = matcher3.matches();
+		//convert to int
+		int yearInt = Integer.parseInt(year);
+		if(!b3) {
+			System.out.println("\t***ERROR: Not year format");
+			pass = false;
+		}
+		else{
+			if (yearInt < 1800 || yearInt > 2017) {
+				System.out.println("\t***ERROR: Not valid year");
+				pass = false;
+			}
+			else{
+				pass = true;
+			}
+		}
+		
+		return pass;
 	}
 
 	/*
@@ -454,16 +591,15 @@ public class AirBooking{
 					System.out.print("Flight Number: ");
 					flightNum = in.readLine();
 					
-					if (flightNum.length() > 8){ 
-					System.out.println("\tERROR: Flight Number must be less than 8 characters");
-					pass = false;
-					}
-					else { pass = true; }
-					
 					Pattern pattern = Pattern.compile("[A-Z0-9]*");
 					Matcher matcher = pattern.matcher(flightNum);
 					boolean b = matcher.matches();
-					if (!b) {
+					
+					if (flightNum.length() > 8){ 
+						System.out.println("\tERROR: Flight Number must be less than 8 characters");
+						pass = false;
+					}
+					else if (!b) {
 						System.out.println("\tERROR: Name must be UPPERCASE ALPHABET and/or numeric (0-9)");
 						pass = false;
 					}
@@ -475,19 +611,21 @@ public class AirBooking{
 				do{
 					System.out.print("Passenger ID: ");
 					pId = in.readLine();
+					
 					Pattern pattern = Pattern.compile("[0-9]*");
 					Matcher matcher = pattern.matcher(pId);
 					boolean b = matcher.matches();
+					
 					if (!b) {
-						System.out.println("\tERROR: Name must be numeric (0-9)");
+						System.out.println("\t***ERROR: Name must be numeric (0-9)");
+						pass = false;
+					}
+					else if ((Integer.parseInt(GetNextValue(esql, "pId", "Passenger")) - 1) < Integer.parseInt(pId)) {
+						System.out.println("\t***ERROR: Invalid Passenger! PID to high!");
 						pass = false;
 					}
 					else{ pass = true; }
-					if ((Integer.parseInt(GetNextValue(esql, "pId", "Passenger")) - 1) < Integer.parseInt(pId)) {
-						System.out.println("\tERROR: Invalid Passenger! PID to high!");
-						pass = false;
-					}
-					else{ pass = true; }
+					
 				}while(!pass);
 				
 				//Check if passenger was actually on the flight
@@ -500,7 +638,7 @@ public class AirBooking{
 						Matcher matcher = pattern.matcher(score);
 						boolean b = matcher.matches();
 						if (!b) {
-							System.out.println("\tERROR: Name must be numeric (0-5)");
+							System.out.println("\t***ERROR: Name must be numeric (0-5)");
 							pass = false;
 						}
 						else{ pass = true; }
@@ -508,7 +646,7 @@ public class AirBooking{
 					//Set comment
 					System.out.print("Comment: ");
 					comment = in.readLine();
-					//TODO: execute query
+					//execute query
 					String rId = GetNextValue(esql, "rID", "Ratings");
 					query += rId + "\',\'" + pId + "\',\'" + flightNum + "\',\'" + score + "\',\'" + comment + "\');";
 					esql.executeUpdate(query);
