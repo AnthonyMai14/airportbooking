@@ -13,4 +13,7 @@ export PGPORT=$1
 export DBNAME=flightDB
 
 create_sh=../sql/create.sql
+create_ind=create_indexes.sql
 psql -h 127.0.0.1 -p $PGPORT $DBNAME < $create_sh
+sleep 2
+psql -h 127.0.0.1 -p $PGPORT $DBNAME <create_indexes.sql
