@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Random;
 
 /**
  * This class defines a simple embedded SQL utility class that is designed to
@@ -564,12 +565,145 @@ public class AirBooking{
  	 */	
 	public static void BookFlight(AirBooking esql){//2
 		//Book Flight for an existing customer
-		try{
+		String Passnum;
+		int testflag = 0;
+		// returns only if a correct value is given.
+		do {
+			System.out.println("Please Provide Your Passport Id number: ");
+			try { // read the integer, parse it and break.
+				//System.out.println("test");
+				Passnum = in.readLine();
+				System.out.println("this is passnum: " + Passnum);
+				//System.out.println(Passnum.length());
+				String q = "SELECT passNum,pID FROM Passenger P WHERE passNum = " + "\'"+ Passnum +"\'" + ";";
+				//System.out.println("test");
+				List<List<String>> currPassNum = esql.executeQueryAndReturnResult(q);
+				//System.out.println("test");
+				// THROWS EXECPTION WHEN LIST IS ZERO... PLEASE ADD AN IF CASE DURING
+				String Pnum = currPassNum.get(0).get(0);
+				String PID  = currPassNum.get(0).get(1);
+				System.out.println("this is pnum: " + Pnum);
+	
+				if(Pnum.equals(Passnum))
+				{
+						String origin;
+						String destination;
+						System.out.println("Passport number is a valid customer number!");
+						
+						do {
+							
+							
+							try {															
+								System.out.println("Where are you flying from?");
+								origin = in.readLine();
+								System.out.println("Where are you flying to?");
+								destination = in.readLine();
+								do{
+									try{
+											String query1 = "SELECT flightnum  FROM FLIGHT F WHERE (F.origin = " + "\'"+  origin + "\'" + "AND F.destination = " + "\'" +destination +"\'" + ") AND F.seats > 0;";
+											List<List<String>> potentialroute = esql.executeQueryAndReturnResult(query1);
+											//System.out.println(ticket.get(0).get(0));
+								            
+											if(potentialroute.size() == 0 )
+											{
+												System.out.println("Flight origin to destination does not exist");
+												
+												break;
+											}
+											else{
+													    String flightnumber = potentialroute.get(0).get(0);
+													    //String pID = potentialroute.get(0).get(1);
+														String letterpool = "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+														Random rng= new Random();
+														char[] hold = new char[10];
+													    for (int i = 0; i < 10; i++)
+														{
+															hold[i] = letterpool.charAt(rng.nextInt(letterpool.length()));
+														}
+			                                        String Bookref = new String(hold);
+													String flightnum = potentialroute.get(0).get(0);
+													System.out.println("Flight has been found.");
+									
+													System.out.println("What date would you like to fly?[M/D/Y(E.G:11/15/2017 ) ]:");
+													String date = in.readLine();
+													//System.out.println(Bookref);			
+													//System.out.println(date);	
+													//System.out.println(flightnum);	
+													
+																String checkforExistingticket = "SELECT * FROM Booking F "
+																						+ " WHERE F.flightNum = "       +" \'"+  flightnumber    +  "\'"
+																					    + " AND F.pID = "                +" \'"+  PID             +  "\'"
+																					    + " AND F.departure = "          +" \'"+  date             +  "\'";
+																					    
+																List<List<String>> Existingticket = esql.executeQueryAndReturnResult(checkforExistingticket);			
+																			    
+													if(Existingticket.size() > 0)
+													{
+														System.out.println("You've already booked a flight to with that date and route");
+														break;
+													}																		
+													//booking (bookRef, departure, flightNum, pID)
+													String Bookinginfo = ( "INSERT into Booking(bookRef, departure, flightNum, pID)" 
+																			+ "VALUES(" +  "\'" 
+																			+ Bookref         +"\'" + "," 
+																			+ "\'"+ date      +"\'" + "," 
+																			+ "\'"+ flightnum +"\'" + "," 
+																			+ "\'"+ PID       +"\'" + ")" ) ;
+													System.out.println(Bookinginfo);						
+													esql.executeUpdate(Bookinginfo);
+													
+													String check = "SELECT bookRef FROM Booking F WHERE F.bookRef  = " + "\'" + Bookref + "\'";
+											        List<List<String>> test = esql.executeQueryAndReturnResult(check);
+													if(test.size() <= 0)
+													{
+														System.out.println("FLIGHT WAS NOT STORED");
+													}
+													else{
+														System.out.println("FLIGHT WAS  STORED");
+													}
+													
+													
+													System.out.println("Reserving flight..... ");
+											//String insert = "INSERT INTO bookings (" + "\'" +
+													
+											testflag = 1;		
+										    break;
+										}
+
 			
-		}
-		catch(Exception e){
-			System.err.println (e.getMessage());		
-		}
+									}catch(Exception e){
+											System.out.println("Error");
+											continue;
+										}
+
+									}while(true);
+									if(testflag ==1 ){
+											break;
+									}
+											
+							}catch (Exception e) {
+									System.out.println("Error");
+									continue;
+									}//end try
+			
+						}while(true);	
+
+				}
+				else
+				{
+					System.out.println( "Invalid Passport ID Number:Not a valid customer Passport Number");
+				}				
+				
+				
+			}catch (Exception e) {
+				System.out.println("Error");
+				continue;
+			}//end try
+			if(testflag ==1 ){
+				break;
+		    }	
+						
+		}while(true);
 	}
 	
 	/*This function will allow you, as a travel agent to note down the reviews of
@@ -634,7 +768,7 @@ public class AirBooking{
 				
 				//Check if passenger was actually on the flight
 				
-					if(!PassengerBookOnFlight(esql, flightNum, pId)){//LINE 667
+					if(!PassengerBookOnFlight(esql, flightNum, pId)){//LINE 819
 						System.out.println("Passenger did not book this flight");
 						pass = false;
 					}
@@ -924,23 +1058,43 @@ public class AirBooking{
  	* You should print flight number, origin, destination, plane, and duration of flight.
 	*/
 	public static void ListAvailableFlightsBetweenOriginAndDestination(AirBooking esql) throws Exception{//5
-		//List all flights between origin and distinatiInsertOrUpdateRouteForAirlineon (i.e. flightNum,origin,destination,plane,duration)
-		/*try{
-			//Ask user for origin
-			System.out.print("Origin: ");
-			String origin = in.readLine();
-			//TODO: Check to see if valid origin
-			System.out.print("Destination: ");
-			String destination = in.readLine();
-			//TODO: Check to see if valid destination (i.e. do while loop)
-			//TODO: Finish query
-			String query = "SELECT flightNum, plane, duration from Flight WHERE origin = "
-			
-			//TODO: execute query
-		}
-		catch(Exception e){
-			System.err.println (e.getMessage());		
-		}*/
+		//List all flights between origin and distination (i.e. flightNum,origin,destination,plane,duration) 
+		//Insert a new route for the airline
+		do{
+			  try{
+					System.out.println("Origin Location?:");
+					String origin = in.readLine();
+					System.out.println("Destination Location?: ");
+					String destination = in.readLine();
+					String query1 = "SELECT * FROM FLIGHT F WHERE (F.origin = " 
+									+ "\'" +  origin     + "\'" 
+									+ " AND F.destination = " + "\'" 
+									+ destination + "\'" + ") AND F.seats > 0;";
+					List<List<String>> ListofFlights = esql.executeQueryAndReturnResult(query1);
+								
+					if(ListofFlights.size() == 0 )
+					{
+							System.out.println("no existing flights!");											
+							break;
+					}					
+					for( int i = 0; i < ListofFlights.size(); i++)
+					{
+						    String finalprint = i+1+ "." +  "flightnum: "+ ListofFlights.get(i).get(1)  +"\n "
+												   + "origin: "          + ListofFlights.get(i).get(2)  +"\n "
+												   + "destination: "     + ListofFlights.get(i).get(3)  +"\n "
+												   + "plane#:"           + ListofFlights.get(i).get(4)  +"\n " 
+												   + "duration: "        + ListofFlights.get(i).get(6)  +"\n ";
+												   //+ ". "+ ListofFlights.get(i).get(5) +"\n "
+												   //+ ". "+ ListofFlights.get(i).get(6) +"\n\n";
+
+							System.out.println(finalprint);
+					}
+					break;				
+				}catch (Exception e){
+						System.out.println("Error");
+						continue;
+				}
+		}while(true);
 	}
 	/*This function will return a list of the k-most popular destinations depending on the
  	* number of flights offered to that specific destination. You should print out the name of
@@ -948,14 +1102,35 @@ public class AirBooking{
  	* should provide the value of k during runtime
 	*/
 	public static void ListMostPopularDestinations(AirBooking esql){//6
-		//Print the k most popular destinations based on the number of flights offered to them (i.e. destination, choices)
-		/*try{
-			
-		}
-		catch(Exception e){
-			System.err.println (e.getMessage());		
-		}*/
+		//Print the k most popular destinations based on the number of flights offered tothem (i.e. destination, choices)
+		boolean doneflag= true;
+		do{
+					
+					try{	
+						
+						System.out.println("How many of the top Popular Destinations do you want to see?:");
+						String num = in.readLine();
+						int result = Integer.parseInt(num);
+						String DestCount = "SELECT distinct destination,COUNT(*)" 
+											+ " FROM FLIGHT GROUP BY destination"
+											+ " ORDER BY COUNT(*) DESC";
+						List<List<String>> DestCountTable = esql.executeQueryAndReturnResult(DestCount);
+						System.out.println("LIST OF POPULAR DESTINATIONS: ");
+						for( int i = 0; i < result; i++)
+						{
+							String finalprint = i+1 + "." +"destination:  " + DestCountTable.get(i).get(0) +" "
+														+"routes there: " + DestCountTable.get(i).get(1) + "\n";
+							System.out.println(finalprint);						
+						}
+						doneflag = false;		
+					break;				
+				}catch (Exception e){
+						System.out.println("Error");
+						continue;
+				}							
 
+		}while(doneflag);
+					
 	}
 		
 	/*This function will return a list of the k-highest rated routes based on the user ratings.
@@ -1018,13 +1193,52 @@ public class AirBooking{
  	*/
 	public static void ListFlightFromOriginToDestinationInOrderOfDuration(AirBooking esql){//8
 		//List flight to destination in order of duration (i.e. Airline name, flightNum, origin, destination, duration, plane)
-		/*try{
-			
-		}
-		catch(Exception e){
-			System.err.println (e.getMessage());		
-		}*/
+		do{
+					int doneflag = 0;
+					try{	
+						
+						System.out.println("What is Origin location?:");
+						String Origin = in.readLine();
+						System.out.println("What is Destination location?:");					
+						String Destination = in.readLine();
+						//int result = Integer.parseInt(num);
+												//String DurCount = "SELECT destination,COUNT(*) FROM FLIGHT GROUP BY destination ORDER BY COUNT(*) DESC";
+										
+						String DurCount =  "SELECT *"
+											+" FROM FLIGHT"
+											+" WHERE origin = " + "\'" + Origin+ "\'" + " AND " + "destination = " + "\'" + Destination  + "\' "
+	
+											+" ORDER BY duration DESC";
 
+						List<List<String>> DurCountTable = esql.executeQueryAndReturnResult(DurCount);
+						//System.out.println("passed sql durcount");
+						System.out.println("LIST OF FLIGHTS IN ORDER OF DURATION: ");
+						//System.out.println(DurCountTable.size());
+						if(DurCountTable.size() == 0 )
+						{
+								System.out.println("no existing flights!");											
+								break;
+						}			
+						for( int i = 0; i < DurCountTable.size(); i++)
+						{
+							//System.out.println("IM HERE");
+							String finalprint = i+1 + "." +"Flight Number:   "     + DurCountTable.get(i).get(1) +"\n "
+														  +"origin:          "     + DurCountTable.get(i).get(2) +"\n "
+														  +"destination:     "     + DurCountTable.get(i).get(3) +"\n "
+														  +"Plane            "     + DurCountTable.get(i).get(4) +"\n "
+														  +"duration:        "     + DurCountTable.get(i).get(6) + "\n";
+								
+							System.out.println(finalprint);						
+						}
+	
+					break;				
+				}catch (Exception e){
+						System.out.println("exception thrown");
+						continue;
+				}							
+
+		}while(true);
+					
 	}
 	
 	/*Find the number of empty seats for a given flight on a given date. You should print flight
